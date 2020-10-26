@@ -2,6 +2,9 @@ let playerSelection = "";
 let computerSelection = "";
 let playerPoints = 0;
 let computerPoints = 0;
+const results = document.querySelector('.results');
+let rounds = 0;
+let buttons = Array.from(document.querySelectorAll('.btn'));
 
 function computerPlay() {
 
@@ -21,61 +24,72 @@ function compare(a, b) {
     }
 }
 
-function playRound(playerSelection, computerSelection) {
+function game() {
+    
+    buttons.forEach(button => button.addEventListener("click",function(e) {
+        computerSelection = computerPlay().toLowerCase();
+        playerSelection = button.value;
+        playRound(button.value,computerSelection);
+    }));   
+}
 
+function playRound(playerSelection, computerSelection) {
+     
+    const para = document.createElement('p');
+ 
     if (compare(playerSelection, computerSelection) === 0) {
-        console.log("It's a tie, you both chose " + playerSelection);
+        para.textContent = "It's a tie, you both chose " + playerSelection;
     } else if (compare(playerSelection, computerSelection) === 1) {
-        console.log("You won this round! " + playerSelection + " beats " + computerSelection);
+        para.textContent = "You won this round! " + playerSelection + " beats " + computerSelection;
         playerPoints++;
     } else if (compare(playerSelection, computerSelection) === -1) {
-        console.log("You Lose this round! " + computerSelection + " beats " + playerSelection);
+        para.textContent = "You Lose this round! " + computerSelection + " beats " + playerSelection;
         computerPoints++;
     }
+    rounds++;
+    results.appendChild(para);
+    showFinalPoints();
 }
 
-function game() {
-
-    for (let i = 0; i < 5; i++) {
-        computerSelection = computerPlay().toLowerCase();
-        playerSelection = prompt("Choose Rock, Paper or Scissors");
-
-        if (playerSelection === null) {
-            return;
-        }
-        playerSelection = playerSelection.toLowerCase();
-
-        if (playerSelection != "rock" && playerSelection != "paper" && playerSelection != "scissors") {
-            alert("You must pick - Rock, Paper or Scissors");
-            return;
-        }
-        playRound(playerSelection, computerSelection);
+function showFinalPoints() {
+    const finalResults = document.createElement('p');
+    
+    if(computerPoints === 5 && computerPoints > playerPoints){
+        finalResults.textContent = "computer wins. "+computerPoints+":"+playerPoints+". Rounds played "+rounds;
+        resetGame();
+    }else if(playerPoints === 5 && computerPoints < playerPoints){
+        finalResults.textContent = "player wins."+playerPoints+":"+computerPoints+". Rounds played "+rounds;
+        resetGame();
+    }else if(playerPoints === 5 && computerPoints === 5){
+        finalResults.textContent = "it's a tie. Rounds played "+rounds;
+        resetGame();
     }
-    showPoints();
-}
-
-function showPoints() {
-    if (playerPoints === computerPoints) {
-        alert("It's a tie, you both have " + playerPoints + " points.");
-    } else if (playerPoints > computerPoints) {
-        alert("You win with " + playerPoints + " points, congrats!")
-    } else {
-        alert("Computer won this round with " + computerPoints + " points :( Try again");
-    }
-    playerPoints = 0;
+    
+    finalResults.style.color = "green";
+    results.appendChild(finalResults);  
+    
+    
+    
+}    
+function resetGame(){
     computerPoints = 0;
+    playerPoints = 0;
+    playAgain();
+    rounds = 0;
+    
+
+}
+function playAgain(){
+    
+    buttons.forEach(button => {
+        button.disabled = true;
+    });
+    const playAgain = document.createElement('button');
+    playAgain.textContent = "Play again.";
+   
+    playAgain.addEventListener("click", function(){
+        location.reload();
+    });
+    results.appendChild(playAgain);
 }
 game();
-
-
-
-
-
-
-
-
-
-
-
-
-
